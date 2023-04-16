@@ -32,7 +32,6 @@ class Thread(QThread):
         myTime = 0
         percentages = []
         while True:
-            timestart = time.time()
             if self.threadactive:
                 ret, frame = self.cap.read()
                 if ret:
@@ -58,8 +57,9 @@ class Thread(QThread):
                                 bytesPerLine = ch * w
                                 convertToQtFormat = QImage(r.data, w, h, bytesPerLine, QImage.Format_RGB888)
                                 p2 = convertToQtFormat.scaled(256, 256, Qt.KeepAspectRatio)
-                            self.changePixmap2.emit(p2)
-
+                                self.changePixmap2.emit(p2)
+                            else:
+                                imgs[0] = imgs[1]
                         else:
                             imgs.append(rgbImage)
                         myTime = time.time() + 1
@@ -69,10 +69,6 @@ class App(QMainWindow):
     def __init__(self):
         super().__init__()
         self.title = 'Pomiar fazy'
-        self.left = 100
-        self.top = 100
-        self.width = 200
-        self.height = 480
         self.initUI()
 
     @pyqtSlot(QImage)
@@ -90,7 +86,6 @@ class App(QMainWindow):
     def initUI(self):
 
         self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
         self.setFixedSize(535, 550)
         self.path = None
         self.firstClick = True
@@ -134,7 +129,6 @@ class App(QMainWindow):
         self.label4.setAlignment(Qt.AlignCenter)
         self.label4.setStyleSheet("font-size: 14pt;border-style: outset;border-width: 2px;border-color: black;")
 
-        vbox = QVBoxLayout()
         self.mode1 = QRadioButton("Odczyt z pliku", self)
         self.mode1.move(400, 280)
         self.mode1.setChecked(True)
